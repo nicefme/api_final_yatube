@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .permission import IsOwnerOrReadOnly
-from .models import Post, Comment, Group, User
+from .models import Post, Group, User
 from .serializers import (PostSerializer,
                           CommentSerializer,
                           FollowSerializer,
@@ -23,7 +23,6 @@ class PostViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
     permission_classes = [IsAuthenticatedOrReadOnly, IsOwnerOrReadOnly]
 
@@ -39,6 +38,7 @@ class FollowViewSet(viewsets.ModelViewSet):
     serializer_class = FollowSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['user__username', 'following__username']
+    http_method_names = ['get', 'post']
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.request.user)
